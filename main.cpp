@@ -8,7 +8,9 @@
 #include <vector>
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-
+#include <fstream>
+#include <sstream>
+std::string filename = "cubes_positions.txt";
 GLuint skyboxShaderProgram;
 float animationTime = 0.0f;
 bool isMoving = false;
@@ -917,11 +919,56 @@ void processInput(GLFWwindow* window)
         movement -= glm::normalize(glm::cross(cameraFront, cameraUp));
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         movement += glm::normalize(glm::cross(cameraFront, cameraUp));
-    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && print)
+    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
     {
-        for (int i = 0;i < placedCubes.size();i++)
-            std::cout << placedCubes[i].position[0] << "," << placedCubes[i].position[1] << "," << placedCubes[i].position[2] << std::endl;
-        print = false;
+        std::ofstream outFile(filename, std::ios::trunc);
+        if (outFile.is_open())
+        {
+            for (const auto& cube : placedCubes)
+            {
+                outFile << cube.position.x << "," << cube.position.y << "," << cube.position.z << std::endl;
+            }
+            outFile.close();
+            std::cout << "Cube positions saved to " << filename << std::endl;
+        }
+        else
+        {
+            std::cerr << "Failed to open file for writing" << std::endl;
+        }
+        
+    }
+    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
+    {
+        // Open file for reading
+        std::ifstream inFile(filename);
+        if (inFile.is_open())
+        {
+            placedCubes.clear(); // Clear existing cubes before loading new ones
+
+            std::string line;
+            while (std::getline(inFile, line))
+            {
+                std::istringstream ss(line);
+                std::string token;
+                glm::vec3 position;
+
+                std::getline(ss, token, ',');
+                position.x = std::stof(token);
+                std::getline(ss, token, ',');
+                position.y = std::stof(token);
+                std::getline(ss, token, ',');
+                position.z = std::stof(token);
+
+                placedCubes.push_back(Cube{ position}); // Use default color or set as needed
+            }
+            inFile.close();
+            std::cout << "Cube positions loaded from " << filename << std::endl;
+        }
+        else
+        {
+            std::cerr << "Failed to open file for reading" << std::endl;
+        }
+       
     }
     if (glm::length(movement) > 0.0f)
     {
