@@ -155,6 +155,9 @@
     <Image Include="..\..\..\Downloads\cube.jpg" />
     <Image Include="..\..\..\Downloads\floor.jpg" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="starter_cubes.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

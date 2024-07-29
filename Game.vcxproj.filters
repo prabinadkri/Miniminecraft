@@ -45,4 +45,7 @@
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="starter_cubes.txt" />
+  </ItemGroup>
 </Project>
